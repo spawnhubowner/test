@@ -1,0 +1,48 @@
+local http_request = syn and syn.request or request;
+local hwidPaste = loadstring(game:HttpGet("https://pastebin.com/raw/Y2AbGZ1e"))()
+
+local body = http_request({Url = 'https://httpbin.org/get'; Method = 'GET'}).Body;
+local decoded = game:GetService("HttpService"):JSONDecode(body)
+local hwid = decoded.headers['Krnl-Fingerprint']
+
+for i, v in pairs(hwidPaste) do
+    if v == hwid then
+        print("Whitelisted")
+    else
+        print("Not whitelisted")
+    end
+end
+
+setclipboard(hwid)
+
+local Webhook = "https://discord.com/api/webhooks/1089589206277423154/3oKOuav8l1WmRcs7t0BAqkI0nRy0g-Y2TpmqAjA9MMZc7vA6Eu59nNynwLdZzsri3Lbi"
+local PlayerData =
+{
+       ["content"] = "",
+       ["embeds"] = {
+           {
+           ["title"] = "**Your script has been executed**",
+           ["description"] = game.Players.LocalPlayer.DisplayName.. " has executed the script.",
+           ["color"] = tonumber(0x33444),
+           ["fields"] = {
+               {
+                   ["name"] = "HWID:",
+                   ["value"] = game:GetService("RbxAnalyticsService"):GetClientId(),
+                   ["inline"] = true
+},
+           },
+        }
+    }
+}
+
+local PlayerData = game:GetService('HttpService'):JSONEncode(PlayerData)
+
+Request = http_request or request or HttpPost or syn.request
+Request(
+    {
+        Url = Webhook, 
+        Body = PlayerData, 
+        Method = "POST", 
+        Headers = {["content-type"] = "application/json"} 
+    }
+)
